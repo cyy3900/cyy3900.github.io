@@ -113,7 +113,7 @@
 <meta property="og:image" content="http://qfmz.tech/images/dubbo-architecture-roadmap.jpg">
 <meta property="og:image" content="http://qfmz.tech/images/dubbo-service-governance.jpg">
 <meta property="og:image" content="http://qfmz.tech/images/dubbo-architecture.jpg">
-<meta property="og:updated_time" content="2018-07-21T10:31:31.500Z">
+<meta property="og:updated_time" content="2018-07-21T10:54:19.195Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Dubbo入门">
 <meta name="twitter:description" content="Dubbo是阿里巴巴公司开源的一个高性能优秀的服务框架，使得应用可通过高性能的 RPC 实现服务的输出和输入功能，以及SOA服务治理方案，可以Spring框架无缝集成。 1，dubbo为什么会出现？为了解决什么问题？1.1产生背景随着互联网的发展，网站应用的规模不断扩大，常规的垂直应用架构已无法应对，分布式服务架构以及流动计算架构势在必行，亟需一个治理系统确保架构有条不紊的演进。 单一应用架构当网">
@@ -366,7 +366,7 @@
                 
               
 
-              <time title="创建时间：2018-07-21 15:08:39 / 修改时间：18:31:31" itemprop="dateCreated datePublished" datetime="2018-07-21T15:08:39+08:00">2018-07-21</time>
+              <time title="创建时间：2018-07-21 15:08:39 / 修改时间：18:54:19" itemprop="dateCreated datePublished" datetime="2018-07-21T15:08:39+08:00">2018-07-21</time>
             
 
             
@@ -491,6 +491,32 @@
 <li>加载Spring配置，并调用远程服务</li>
 </ul>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">package qfmz.tech.demo;</span><br><span class="line"></span><br><span class="line">import org.springframework.context.support.ClassPathXmlApplicationContext;</span><br><span class="line"></span><br><span class="line">public class Consumer &#123;</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("consumer.xml");</span><br><span class="line">        context.start();</span><br><span class="line">        DemoService demoService = (DemoService)context.getBean("demoService"); // 获取远程服务代理</span><br><span class="line">        String hello = demoService.sayHello("world"); // 执行远程方法</span><br><span class="line">        System.out.println( hello ); // 显示调用结果</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4，Dubbo的负载均衡策略"><a href="#4，Dubbo的负载均衡策略" class="headerlink" title="4，Dubbo的负载均衡策略"></a>4，Dubbo的负载均衡策略</h2><p>在集群负载均衡时，Dubbo 提供了多种均衡策略，缺省为 random 随机调用。</p>
+<p>Dubbo提供了四种负载均衡策略，同时也允许自定义负载均衡策略。</p>
+<ul>
+<li>Random LoadBalance</li>
+</ul>
+<p>随机，按权重设置随机概率。<br>在一个截面上碰撞的概率高，但调用量越大分布越均匀，而且按概率使用权重后也比较均匀，有利于动态调整提供者权重。</p>
+<ul>
+<li>RoundRobin LoadBalance</li>
+</ul>
+<p>轮循，按公约后的权重设置轮循比率。<br>存在慢的提供者累积请求的问题，比如：第二台机器很慢，但没挂，当请求调到第二台时就卡在那，久而久之，所有请求都卡在调到第二台上。</p>
+<ul>
+<li>LeastActive LoadBalance</li>
+</ul>
+<p>最少活跃调用数，相同活跃数的随机，活跃数指调用前后计数差。<br>使慢的提供者收到更少请求，因为越慢的提供者的调用前后计数差会越大。</p>
+<ul>
+<li>ConsistentHash LoadBalance</li>
+</ul>
+<p>一致性 Hash，相同参数的请求总是发到同一提供者。<br>当某一台提供者挂时，原本发往该提供者的请求，基于虚拟节点，平摊到其它提供者，不会引起剧烈变动。</p>
+<ul>
+<li>配置</li>
+</ul>
+<p>1 服务端服务级别<br>&lt;dubbo:service interface=”…” loadbalance=”roundrobin” /&gt;<br>2 客户端服务级别<br>&lt;dubbo:reference interface=”…” loadbalance=”roundrobin” /&gt;<br>3 服务端方法级别<br>&lt;dubbo:service interface=”…”&gt;<br>    &lt;dubbo:method name=”…” loadbalance=”roundrobin”/&gt;<br>&lt;/dubbo:service&gt;<br>4 客户端方法级别<br>&lt;dubbo:reference interface=”…”&gt;<br>    &lt;dubbo:method name=”…” loadbalance=”roundrobin”/&gt;<br>&lt;/dubbo:reference&gt;</p>
+<h2 id="5，Dubbo使用的协议"><a href="#5，Dubbo使用的协议" class="headerlink" title="5，Dubbo使用的协议"></a>5，Dubbo使用的协议</h2><p><strong>官方推荐和默认的协议是dubbo。</strong></p>
+<h3 id="dubbo协议：dubbo"><a href="#dubbo协议：dubbo" class="headerlink" title="dubbo协议：dubbo://"></a>dubbo协议：dubbo://</h3><p>Dubbo 缺省协议采用单一长连接和 NIO 异步通讯，适合于小数据量大并发的服务调用，以及服务消费者机器数远大于服务提供者机器数的情况。</p>
+<p>反之，Dubbo 缺省协议不适合传送大数据量的服务，比如传文件，传视频等，除非请求量很低。</p>
+<p>参考文献：dubbo官方文档<a href="https://dubbo.incubator.apache.org/#!/docs/user/preface/background.md?lang=zh-cn" target="_blank" rel="noopener">https://dubbo.incubator.apache.org/#!/docs/user/preface/background.md?lang=zh-cn</a></p>
 
       
     </div>
@@ -711,7 +737,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1，dubbo为什么会出现？为了解决什么问题？"><span class="nav-number">1.</span> <span class="nav-text">1，dubbo为什么会出现？为了解决什么问题？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1产生背景"><span class="nav-number">1.1.</span> <span class="nav-text">1.1产生背景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单一应用架构"><span class="nav-number">1.1.1.</span> <span class="nav-text">单一应用架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#垂直应用架构"><span class="nav-number">1.1.2.</span> <span class="nav-text">垂直应用架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分布式服务架构"><span class="nav-number">1.1.3.</span> <span class="nav-text">分布式服务架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#流动计算架构"><span class="nav-number">1.1.4.</span> <span class="nav-text">流动计算架构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2产生的原因（dubbo的基本需求）"><span class="nav-number">1.2.</span> <span class="nav-text">1.2产生的原因（dubbo的基本需求）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2，Dubbo的架构"><span class="nav-number">2.</span> <span class="nav-text">2，Dubbo的架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Dubbo快速搭建第一个例子"><span class="nav-number">3.</span> <span class="nav-text">3,Dubbo快速搭建第一个例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务提供方"><span class="nav-number">3.1.</span> <span class="nav-text">服务提供方</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务调用方"><span class="nav-number">3.2.</span> <span class="nav-text">服务调用方</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1，dubbo为什么会出现？为了解决什么问题？"><span class="nav-number">1.</span> <span class="nav-text">1，dubbo为什么会出现？为了解决什么问题？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1产生背景"><span class="nav-number">1.1.</span> <span class="nav-text">1.1产生背景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单一应用架构"><span class="nav-number">1.1.1.</span> <span class="nav-text">单一应用架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#垂直应用架构"><span class="nav-number">1.1.2.</span> <span class="nav-text">垂直应用架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分布式服务架构"><span class="nav-number">1.1.3.</span> <span class="nav-text">分布式服务架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#流动计算架构"><span class="nav-number">1.1.4.</span> <span class="nav-text">流动计算架构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2产生的原因（dubbo的基本需求）"><span class="nav-number">1.2.</span> <span class="nav-text">1.2产生的原因（dubbo的基本需求）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2，Dubbo的架构"><span class="nav-number">2.</span> <span class="nav-text">2，Dubbo的架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Dubbo快速搭建第一个例子"><span class="nav-number">3.</span> <span class="nav-text">3,Dubbo快速搭建第一个例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务提供方"><span class="nav-number">3.1.</span> <span class="nav-text">服务提供方</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务调用方"><span class="nav-number">3.2.</span> <span class="nav-text">服务调用方</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4，Dubbo的负载均衡策略"><span class="nav-number">4.</span> <span class="nav-text">4，Dubbo的负载均衡策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5，Dubbo使用的协议"><span class="nav-number">5.</span> <span class="nav-text">5，Dubbo使用的协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dubbo协议：dubbo"><span class="nav-number">5.1.</span> <span class="nav-text">dubbo协议：dubbo://</span></a></li></ol></li></ol></div>
             
 
           </div>
